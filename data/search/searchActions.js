@@ -12,17 +12,20 @@ export const GET_SEARCH_RESULTS= 'SEARCH::GET_SEARCH_RESULTS';
 
 const DUMMY_URL = 'https://jsonplaceholder.typicode.com/posts/1';
 
-const transformData = searchResults => {
-  //Todo(Pavlos): implement the real transformation function
-  return Maybe.fromNullable(searchResults);
-}
+
+const transformDataSync = searchResults => searchResults;
+
+const transformDataAsync = searchResults => task(resolver => {
+  //Some sort of Async task
+  resolver.resolve(Maybe.fromNullable(searchResults));
+})
 
 const asyncValidate = searchResults => task(resolver => {
   setTimeout(() => resolver.resolve(searchResults), 3000)
 })
 
 
-export const getSearchResultsRoot = (fetch) => {
+export const getSearchResultsRoot = fetch => {
   // ToDo(Pavlos): construct the url with the search criteria
   const getUrl = searchCriteria => DUMMY_URL;
   const fetchData = compose(fetch, getUrl);
@@ -30,8 +33,9 @@ export const getSearchResultsRoot = (fetch) => {
   return createAction(
     GET_SEARCH_RESULTS,
     compose.all(
+      map.curried(transformDataSync),
       chain.curried(asyncValidate),
-      map.curried(transformData),
+      chain.curried(transformDataAsync),
       fetchData
     )
   );
