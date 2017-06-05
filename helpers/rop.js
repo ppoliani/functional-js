@@ -21,8 +21,7 @@ bind(
 })
 
 
-// Imperative way
-
+// Imperative approach
 const doSomethingImp = i => i;
 const doSomethingElseImp = i => i;
 const doAThridThingImp = i => i;
